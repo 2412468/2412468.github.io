@@ -127,60 +127,27 @@ def run_publish():
         lines.append(msg)
         PUBLISH["log"] = "\n".join(lines)
     try:
-        step("[1/3] 编译站点 ...")
         freed = free_port(4000)
         if freed:
-            step("   已关闭本地预览（释放文件锁），发布后可重新打开")
-        cmd = "npx hexo clean && npx hexo generate"
-        r = subprocess.run(cmd, cwd=str(BASE), shell=True, capture_output=True, text=True,
-                           encoding="utf-8", errors="replace", timeout=300)
-        if r.returncode != 0 and "EBUSY" in ((r.stdout or "") + (r.stderr or "")):
-            step("   文件被占用，改用增量生成 ...")
-            r = subprocess.run("npx hexo generate", cwd=str(BASE), shell=True,
-                               capture_output=True, text=True,
-                               encoding="utf-8", errors="replace", timeout=300)
-        if r.returncode != 0 or not (PUBLIC / "index.html").exists():
-            step(r.stdout or "")
-            step(r.stderr or "")
-            step("[X] 编译失败")
+            step("已关闭本地预览（释放文件锁）")
+        step("开始构建并推送 source 分支 …")
+        ps1 = TOOLS / "publish.ps1"
+        p = subprocess.Popen(
+            ["powershell", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File", str(ps1), "-NoOpen"],
+            cwd=str(BASE), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+            text=True, encoding="utf-8", errors="replace", bufsize=1)
+        for line in p.stdout:
+            line = line.rstrip()
+            if line:
+                step(line)
+        p.wait()
+        if p.returncode == 0:
+            step("")
+            step("[完成] GitHub 正在编译，约 1~2 分钟后生效：" + SITE)
+            PUBLISH["ok"] = True
+        else:
+            step("[X] 发布失败，检查上面的日志")
             PUBLISH["ok"] = False
-            return
-        step("[OK] 编译完成")
-
-        step("[2/3] 同步到部署仓库 ...")
-        DEPLOY.mkdir(parents=True, exist_ok=True)
-        rc = subprocess.run(["robocopy", str(PUBLIC), str(DEPLOY), "/MIR", "/XD", ".git",
-                             "/NFL", "/NDL", "/NJH", "/NJS", "/NP"],
-                            capture_output=True, text=True, encoding="utf-8",
-                            errors="replace", timeout=300)
-        if rc.returncode >= 8:
-            step(rc.stdout or "")
-            step("[X] 同步失败")
-            PUBLISH["ok"] = False
-            return
-        step("[OK] 同步完成")
-
-        step("[3/3] 推送到 GitHub ...")
-        def git(*args):
-            return subprocess.run(["git"] + list(args), cwd=str(DEPLOY),
-                                  capture_output=True, text=True,
-                                  encoding="utf-8", errors="replace", timeout=300)
-        git("config", "core.autocrlf", "false")
-        git("add", "-A")
-        git("-c", "user.name=2412468",
-            "-c", "user.email=2412468@users.noreply.github.com",
-            "commit", "-m", "update " + time.strftime("%Y-%m-%d %H:%M"))
-        pr = git("push", "--force", "origin", "main")
-        if pr.returncode != 0:
-            step(pr.stdout or "")
-            step(pr.stderr or "")
-            step("[X] 推送失败：需要先登录一次 GitHub")
-            step("   → 双击一次「发布网站.bat」，在弹出的登录窗口完成授权，之后编辑器就能直接发布")
-            PUBLISH["ok"] = False
-            return
-        step("[OK] 推送完成")
-        step("[完成] 等 1~2 分钟生效：" + SITE)
-        PUBLISH["ok"] = True
     except Exception as e:
         step("[X] " + str(e))
         PUBLISH["ok"] = False
