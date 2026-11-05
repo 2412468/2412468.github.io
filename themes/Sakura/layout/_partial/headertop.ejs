@@ -1,0 +1,174 @@
+<div class="headertop">
+<style>
+  .headertop{position:relative;z-index:6;overflow:hidden;background:#05050f}
+  #bg-scene{position:absolute;inset:0;width:100%;height:100%;border:0;display:block;z-index:0;pointer-events:none}
+  .headertop #centerbg{background:none !important;position:relative;z-index:2 !important}
+  .headertop #video-container{display:none !important}
+  .headertop::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:linear-gradient(180deg,rgba(4,5,14,.42) 0%,rgba(4,5,14,0) 26%,rgba(4,5,14,0) 70%,rgba(4,5,14,.55) 100%)}
+  .headertop .headertop-down{position:relative;z-index:5}
+  /* 右上角三条杠按钮 */
+  .hud-toggle{
+    position:absolute;top:92px;right:22px;width:44px;height:44px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+    padding:0;border-radius:12px;cursor:pointer;z-index:80;
+    background:rgba(10,10,20,.26);
+    border:1px solid rgba(255,255,255,.14);
+    -webkit-backdrop-filter:blur(16px) saturate(150%);backdrop-filter:blur(16px) saturate(150%);
+    box-shadow:0 8px 26px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.16);
+    transition:background .25s ease,border-color .25s ease,transform .16s ease;
+  }
+  .hud-toggle:hover{background:rgba(10,10,20,.44);border-color:rgba(255,255,255,.24)}
+  .hud-toggle:active{transform:scale(.95)}
+  .hud-toggle.is-open{background:rgba(10,10,20,.5);border-color:rgba(255,255,255,.3);right:318px}
+  .hud-toggle span{
+    display:block;width:18px;height:2px;border-radius:2px;
+    background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(238,240,250,.70));
+    box-shadow:0 1px 2px rgba(0,0,0,.30),0 0 7px rgba(255,255,255,.16);
+  }
+  @media (max-width:860px){.hud-toggle{width:40px;height:40px;top:88px;right:14px}.hud-toggle span{width:16px}}
+
+  /* 搜索依赖 content.json（未生成），先隐藏避免点击无效 */
+  .site-top .searchbox{display:none !important}
+  .headertop #banner_wave_1,.headertop #banner_wave_2{z-index:5}
+
+  /* ===== 左侧滑出面板（默认收起，鼠标移到左上角站名时滑下） ===== */
+  .headertop .focusinfo{
+    position:fixed;top:78px;left:26px;width:304px;margin:0;padding:22px 22px 18px;
+    text-align:left;background:rgba(10,10,22,.76);
+    -webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.10);border-radius:18px;
+    box-shadow:0 20px 60px rgba(0,0,0,.5);
+    transform:translateY(-22px) scale(.97);opacity:0;visibility:hidden;pointer-events:none;
+    transition:transform .42s cubic-bezier(.22,.85,.24,1),opacity .28s ease,visibility .42s;
+    z-index:70;
+  }
+  .headertop .focusinfo.panel-open{transform:none;opacity:1;visibility:visible;pointer-events:auto}
+  .headertop .focusinfo .header-tou{float:none;display:block;text-align:left;margin:0 0 14px;height:auto}
+  .headertop .focusinfo .header-tou img{width:70px;height:70px;border-radius:50%;object-fit:cover;
+    border:2px solid rgba(255,255,255,.22);box-shadow:0 6px 18px rgba(0,0,0,.4)}
+  .headertop .focusinfo .header-info p{color:#e9e5f6;font-size:14px;line-height:1.75;text-align:left;
+    margin:0 0 14px;text-shadow:none}
+  .headertop .focusinfo .top-social_v2{display:flex;justify-content:flex-start;gap:12px;margin:0;padding:0}
+  .headertop .focusinfo .top-social_v2 li{display:flex;align-items:center;margin:0}
+  .headertop .focusinfo .top-social_v2 li#bg-pre,
+  .headertop .focusinfo .top-social_v2 li#bg-next{display:none}
+  .headertop .focusinfo .top-social_v2 img{width:22px;height:22px;opacity:.92}
+  .headertop .focusinfo .wechatInner{display:none}
+  @media (max-width:860px){
+    .headertop .focusinfo{left:12px;right:12px;width:auto;top:66px}
+  }
+</style>
+<iframe id="bg-scene" src="/lib/gargantua/index.html?mouse=1&v=20261102c" title="背景场景" scrolling="no" frameborder="0" tabindex="-1" aria-hidden="true"></iframe>
+  <!-- 右上角：暗色高透明「三条杠」按钮，展开/收起场景参数面板 -->
+  <button id="hud-toggle" class="hud-toggle" aria-label="场景参数" title="场景参数">
+    <span></span><span></span><span></span>
+  </button>
+  <div id="banner_wave_1"></div>
+  <div id="banner_wave_2"></div>
+  <figure id="centerbg" class="centerbg">
+    <div class="focusinfo no-select">
+      <div class="header-tou">
+        <a href="<%- theme.url%>">
+          <img src="<%- (theme.cdn || '') + theme.avatar %>">
+        </a>
+      </div>
+      <div class="header-info">
+        <p><%= theme.description %></p>
+        <div class="top-social_v2">
+          <li id="bg-pre">
+            <img class="flipx" src="/img/social/bilibili.svg">
+          </li>
+          <% if (theme.social) {%>
+            <% for (i in theme.social) {%>
+              <% if (theme.social[i].qrcode) {%>
+                <li class="wechat">
+                  <a href="<%= theme.social[i].url%>">
+                    <img src="<%- (theme.cdn || '') + theme.social[i].img%>">
+                  </a>
+                  <div class="wechatInner">
+                    <img src="<%- (theme.cdn || '') + theme.social[i].qrcode%>">
+                  </div>
+                </li>
+              <% } else { %>
+                <li>
+                  <a href="<%= theme.social[i].url%>" target="_blank" class="social-github" title="<%- i %>">
+                    <img src="<%- (theme.cdn || '') + theme.social[i].img%>">
+                  </a>
+                </li>
+              <% } %>
+            <% } %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </figure>
+  <div id="video-container" style="">
+    <video style="object-fit: fill" id="bgvideo" class="video" video-name="" src="" width="auto" preload="auto">
+    </video>
+    <div id="video-btn" class="loadvideo videolive">
+    </div>
+  </div>
+  <div class="headertop-down faa-float animated" onclick="headertop_down()">
+    <span>
+      <i class="fa fa-chevron-down" aria-hidden="true">
+      </i>
+    </span>
+  </div>
+</div>
+<script>
+function initHeroPanel() {
+  var brand = document.querySelector('.site-branding');
+  var panel = document.querySelector('.headertop .focusinfo');
+  if (!brand || !panel) return;
+  var timer = null;
+  var sceneFrame = document.getElementById('bg-scene');
+  function show() { clearTimeout(timer); panel.classList.add('panel-open'); }
+  function hide() { timer = setTimeout(function () { panel.classList.remove('panel-open'); }, 280); }
+  brand.addEventListener('mouseenter', show);
+  brand.addEventListener('mouseleave', hide);
+  panel.addEventListener('mouseenter', show);
+  panel.addEventListener('mouseleave', hide);
+  /* 右上角「三条杠」按钮：控制 iframe 里的场景参数面板 */
+  var hudBtn = document.getElementById('hud-toggle');
+  if (hudBtn && sceneFrame) {
+    hudBtn.addEventListener('click', function () {
+      var w = sceneFrame.contentWindow;
+      if (w) w.postMessage({ type: 'toggle-hud' }, '*');
+      var open = hudBtn.classList.toggle('is-open');
+      /* iframe 平时 pointer-events:none（不抢滚轮），面板打开时才允许交互 */
+      sceneFrame.style.pointerEvents = open ? 'auto' : 'none';
+      /* 面板打开时把 iframe 提到 #centerbg 之上，否则点击被那一层图形吃掉 */
+      sceneFrame.style.zIndex = open ? '30' : '0';
+    });
+  }
+  /* 面板打开时鼠标在 iframe 里，滚轮事件由场景转发出来，保证页面还能滚 */
+  window.addEventListener('message', function (e) {
+    var d = e.data;
+    if (d && d.type === 'hero-scroll') window.scrollBy(0, d.dy);
+  });
+
+  /* 把鼠标横向位置转发给 iframe 里的 3D 场景（±15° 视差旋转） */
+  function pushParallax(clientX) {
+    if (!sceneFrame || !sceneFrame.contentWindow) return;
+    var x = (clientX / window.innerWidth - 0.5) * 2;
+    sceneFrame.contentWindow.postMessage({ type: 'hero-parallax', x: x }, '*');
+  }
+  window.addEventListener('mousemove', function (e) { pushParallax(e.clientX); }, { passive: true });
+  window.addEventListener('touchmove', function (e) {
+    if (e.touches && e.touches[0]) pushParallax(e.touches[0].clientX);
+  }, { passive: true });
+
+  if ('ontouchstart' in window) {
+    brand.addEventListener('click', function (e) {
+      e.preventDefault();
+      panel.classList.toggle('panel-open');
+    });
+  }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initHeroPanel);
+} else {
+  initHeroPanel();
+}
+</script>

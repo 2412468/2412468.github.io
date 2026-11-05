@@ -1,0 +1,102 @@
+# site name
+prefixName: ''
+siteName: Just路过
+# favicon and site master avatar
+favicon: /images/favicon.ico
+avatar: /img/custom/avatar.jpg
+url: https://yourname.github.io
+description: 只是路过，顺手留点东西。
+cdn: ''
+pjax: 0
+# 1开启
+mathjax: 0
+
+notice: 欢迎来到 Just路过 的小站，这里还在慢慢搭。
+lazyloadImg: https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/loader/orange.progress-bar-stripe-loader.svg
+
+menus:
+  首页: { path: /, fa: fa-fort-awesome faa-shake }
+  归档: { path: /archives, fa: fa-archive faa-shake }
+  标签: { path: /tags, fa: fa-tags faa-vertical }
+  关于: { path: /about/, fa: fa-leaf faa-wrench }
+  RSS: { path: /atom.xml, fa: fa-rss faa-pulse }
+
+
+# Home page sort type: -1: newer first，1: older first.
+homePageSortType: -1
+# Home page article shown number)
+homeArticleShown: 10
+# 背景图片 更好的修改
+bg:
+  - https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/cover/(1).jpg.webp
+  - https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/cover/(2).jpg.webp
+  - https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/cover/(3).jpg.webp
+  - https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/cover/(4).jpg.webp
+  - https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/cover/(5).jpg.webp
+  - https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/cover/(6).jpg.webp
+  - https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/cover/(7).jpg.webp
+  - https://cdn.jsdelivr.net/gh/honjun/cdn@1.6/img/cover/(8).jpg.webp
+
+# 背景图片样式 空 原图效果 filter-dim 阴影 filter-grid 横条 filter-dot 点点
+bgclass: ''
+
+# startdash url, title, desc img
+startdash: 
+  - {url: /about/, title: 关于我, desc: 这里放一句自我介绍，改 themes/Sakura/_config.yml, img: /img/startdash/about.svg}
+  - {url: /archives, title: 文章归档, desc: 按时间看看我写过什么, img: /img/startdash/archive.svg}
+  - {url: https://space.bilibili.com/3493265315728199, title: B 站, desc: 视频都发在这里, img: /img/startdash/bilibili.svg}
+
+
+
+# your site build time or founded date
+siteBuildingTime: 11/01/2026
+
+#social  url, img PC端配置
+social:
+  bilibili: {url: https://space.bilibili.com/3493265315728199, img: /img/social/bilibili.svg}
+
+#social  url, img 移动端配置
+msocial:
+  bilibili: {url: https://space.bilibili.com/3493265315728199, fa: fa-tv, color: 00a1d6}
+
+donate:
+  paypal: https://www.paypal.me/hojuncn
+  alipay: /img/custom/donate/AliPayQR.jpg
+  wechat: /img/custom/donate/WeChanQR.jpg
+  wechatSQ: /img/custom/donate/WeChanSQ.jpg
+
+# 视频地址为https://cdn.jsdelivr.net/gh/honjun/hojun@1.2/Unbroken.mp4，配置如下
+movies:
+  url: https://cdn.jsdelivr.net/gh/honjun/hojun@1.2
+  # 多个视频用逗号隔开，随机获取。支持的格式目前已知MP4,Flv。其他的可以试下，不保证有用
+  name: Unbroken.mp4
+
+aplayer: 
+  id: 2660651585
+  server: netease
+  type: playlist
+  fixed: true
+  autoplay: false
+  loop: all
+  order: random
+  preload: auto
+  volume: 0.7
+  mutex: true
+
+# Valine
+valine: false
+v_appId: GyC3NzMvd0hT9Yyd2hYIC0MN-gzGzoHsz
+v_appKey: mgOpfzbkHYqU92CV4IDlAUHQ
+
+# Waline
+waline:
+  enable: false
+  serverURL: #服务端地址
+  visitor: false #统计阅读量
+  comment_count: true #统计评论数
+  avatar: mp # Gravatar style : mp/identicon/monsterid/wavatar/retro/hide
+  guest_info: nick #,mail,link # custom comment header
+  pageSize: 10
+  placeholder: 祝开开心心！ # Comment Box placeholder
+  requiredFields: [ 'nick','mail' ] #设置必填项
+  background: https://gitee.com/cungudafa/source/raw/master/img/gif/Sitich/Sitich2.gif #输入框提示动画
